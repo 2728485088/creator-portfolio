@@ -44,12 +44,17 @@ html = html.replace(
     f'<script>\n{js}\n</script>'
 )
 
-# 输出
+# 输出 deploy.html
 output = BASE / 'deploy.html'
 with open(output, 'w', encoding='utf-8') as f:
     f.write(html)
 
+# 同时更新 works-data.js（GitHub Pages 上 index.html 会引用这个文件）
+works_data_js = f'// 自动生成，请勿手动编辑\nwindow.__WORKS_DATA__ = {works_json};\n'
+with open(BASE / 'works-data.js', 'w', encoding='utf-8') as f:
+    f.write(works_data_js)
+
 size_kb = len(html) / 1024
 print(f'✅ deploy.html 已生成 ({size_kb:.1f} KB)')
+print(f'✅ works-data.js 已更新')
 print(f'   包含 {len(works)} 个作品')
-print(f'   可直接部署到: Vercel / Netlify / GitHub Pages / 任意静态托管')
