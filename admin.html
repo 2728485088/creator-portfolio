@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品管理后台 - Creator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+    <!-- 登录遮罩 -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-box">
+            <div class="auth-logo">CR<span>.</span></div>
+            <h2>管理后台</h2>
+            <p>请输入管理员密码以继续</p>
+            <form id="authForm">
+                <input type="password" id="authPassword" placeholder="输入密码" autofocus>
+                <button type="submit" class="btn btn-primary btn-full">进入后台</button>
+            </form>
+            <p class="auth-error" id="authError"></p>
+        </div>
+    </div>
+
+    <!-- 管理界面 -->
+    <div class="admin-app" id="adminApp" style="display:none">
+        <!-- 顶部栏 -->
+        <header class="admin-header">
+            <div class="admin-header-left">
+                <a href="/" class="admin-logo" target="_blank">CR<span>.</span></a>
+                <span class="admin-badge">管理后台</span>
+            </div>
+            <div class="admin-header-right">
+                <button class="btn btn-outline btn-sm" id="btnNewWork">+ 新增作品</button>
+                <a href="/" class="btn btn-outline btn-sm" target="_blank">查看前台</a>
+            </div>
+        </header>
+
+        <!-- 主体：左侧列表 + 右侧编辑 -->
+        <div class="admin-main">
+            <!-- 左侧作品列表 -->
+            <aside class="admin-sidebar">
+                <div class="sidebar-header">
+                    <h3>作品列表</h3>
+                    <span class="sidebar-count" id="workCount">0 个</span>
+                </div>
+                <div class="sidebar-list" id="workList">
+                    <!-- 动态渲染 -->
+                </div>
+            </aside>
+
+            <!-- 右侧编辑区 -->
+            <section class="admin-editor" id="editorPanel">
+                <div class="editor-empty" id="editorEmpty">
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1" opacity="0.2">
+                        <rect x="8" y="8" width="48" height="48" rx="8"/>
+                        <path d="M24 32h16M32 24v16"/>
+                    </svg>
+                    <p>选择一个作品开始编辑，或点击"新增作品"</p>
+                </div>
+
+                <!-- 编辑表单 -->
+                <div class="editor-form" id="editorForm" style="display:none">
+                    <input type="hidden" id="editId">
+
+                    <!-- 封面 -->
+                    <div class="form-section">
+                        <label class="form-label">🖼 封面图片</label>
+                        <div class="cover-upload" id="coverUpload">
+                            <img class="cover-preview" id="coverPreview" src="" alt="封面预览"
+                                 onerror="this.style.display='none';document.getElementById('coverPlaceholder').style.display='flex';">
+                            <div class="cover-placeholder" id="coverPlaceholder">
+                                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3">
+                                    <rect x="4" y="6" width="32" height="28" rx="4"/>
+                                    <circle cx="14" cy="16" r="4"/>
+                                    <path d="M4 28l10-10 8 8 6-6 8 8"/>
+                                </svg>
+                                <span>点击上传封面图（或下方粘贴图床链接）</span>
+                            </div>
+                            <input type="file" id="coverFileInput" accept="image/*" hidden>
+                        </div>
+                        <input type="text" class="form-input" id="editCover" placeholder="或粘贴图片链接（支持图床URL、任意网络图片地址）...">
+                        <span class="form-hint">推荐尺寸 1280×720（16:9）。可直接粘贴图床链接，部署到线上也能正常显示。</span>
+                    </div>
+
+                    <!-- 标题 -->
+                    <div class="form-section">
+                        <label class="form-label">作品标题</label>
+                        <input type="text" class="form-input form-input-lg" id="editTitle" placeholder="输入作品标题...">
+                    </div>
+
+                    <!-- 分类 -->
+                    <div class="form-section">
+                        <label class="form-label">分类</label>
+                        <select class="form-input" id="editCategory">
+                            <option value="media">自媒体作品</option>
+                            <option value="corporate">企业宣传</option>
+                            <option value="ai">AI 短剧</option>
+                        </select>
+                    </div>
+
+                    <!-- 描述 -->
+                    <div class="form-section">
+                        <label class="form-label">作品描述</label>
+                        <textarea class="form-input" id="editDesc" rows="3" placeholder="简短描述这个作品..."></textarea>
+                    </div>
+
+                    <!-- 标签 -->
+                    <div class="form-section">
+                        <label class="form-label">标签</label>
+                        <div class="tags-editor" id="tagsEditor">
+                            <div class="tags-list" id="tagsList"></div>
+                            <input type="text" class="tags-input" id="tagsInput" placeholder="输入标签后按回车添加...">
+                        </div>
+                    </div>
+
+                    <!-- 视频 -->
+                    <div class="form-section">
+                        <label class="form-label">🎬 视频</label>
+                        <div class="video-source-tabs">
+                            <button class="video-tab active" data-tab="link">🔗 粘贴外链（推荐）</button>
+                            <button class="video-tab" data-tab="upload">📁 上传本地视频</button>
+                        </div>
+                        <div class="video-panel" id="videoPanelLink">
+                            <input type="text" class="form-input" id="editVideo" placeholder="粘贴 B站链接 / YouTube链接 / 其他视频URL...">
+                            <span class="form-hint">
+                                ✅ <strong>推荐使用外链</strong>：视频上传到 B站/YouTube 后粘贴链接即可，不占空间、加载更快、任何平台都能播放。<br>
+                                支持：<code>bilibili.com/video/BVxxxxx</code>、<code>youtube.com/watch?v=xxxxx</code>、<code>youtu.be/xxxxx</code>
+                            </span>
+                        </div>
+                        <div class="video-panel" id="videoPanelUpload" style="display:none">
+                            <div class="video-upload-row">
+                                <button class="btn btn-outline btn-sm" id="btnVideoUpload">📁 选择本地视频</button>
+                                <input type="file" id="videoFileInput" accept="video/*" hidden>
+                                <span class="video-upload-hint" id="videoUploadHint">未选择文件</span>
+                            </div>
+                            <span class="form-hint">上传后路径自动填入上方输入框。本地视频仅本地服务器可访问，部署到线上后需改用外链。</span>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="form-actions">
+                        <button class="btn btn-primary" id="btnSave">
+                            <span id="btnSaveText">💾 保存</span>
+                        </button>
+                        <button class="btn btn-outline btn-danger" id="btnDelete">🗑 删除</button>
+                    </div>
+
+                    <!-- 状态消息 -->
+                    <div class="form-status" id="formStatus"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Toast 提示 -->
+        <div class="toast-container" id="toastContainer"></div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

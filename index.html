@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="个人作品展示 - 自媒体创作者 | 视频内容制作人 | AI短剧创作者">
+    <title>创作者 | 个人作品集</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">CR<span class="nav-logo-dot">.</span></a>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">首页</a></li>
+                <li><a href="#works" class="nav-link">作品</a></li>
+                <li><a href="#about" class="nav-link">关于</a></li>
+                <li><a href="#contact" class="nav-link">联系</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ========== 1. 首屏 / 个人信息模块 ========== -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <p class="hero-greeting">你好，我是</p>
+                <h1 class="hero-name">张 创 作</h1>
+                <p class="hero-tagline">
+                    用镜头讲述品牌故事，以创意驱动内容价值
+                </p>
+                <div class="hero-roles">
+                    <span class="hero-role">自媒体创作者</span>
+                    <span class="hero-role-divider">/</span>
+                    <span class="hero-role">企业宣传片制作人</span>
+                    <span class="hero-role-divider">/</span>
+                    <span class="hero-role">AI 短剧创作者</span>
+                </div>
+                <p class="hero-bio">
+                    专注高品质视频内容创作，为企业与品牌提供从策划到成片的完整视觉解决方案。<br>
+                    相信好的内容，自己会说话。
+                </p>
+                <div class="hero-actions">
+                    <a href="#works" class="btn btn-primary">
+                        查看作品
+                        <svg class="btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 3l5 5-5 5M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <a href="#contact" class="btn btn-outline">联系合作</a>
+                </div>
+                <!-- 快速联系方式 -->
+                <div class="hero-contact-quick">
+                    <a href="mailto:hello@creator.com" class="contact-chip" title="邮箱">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+                        hello@creator.com
+                    </a>
+                    <a href="#" class="contact-chip" title="微信" onclick="return false;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 10.9c3.4-2.3 7.8-1.9 10.6 1 .8.8 1.3 1.8 1.6 2.9"/><circle cx="9" cy="9" r="7"/><circle cx="15" cy="15" r="7"/><path d="M12 6v.01M6 12v.01M12 18v.01"/></svg>
+                        creator_zhang
+                    </a>
+                    <a href="#" class="contact-chip" title="社交平台">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+                        关注我
+                    </a>
+                </div>
+            </div>
+            <!-- 头像/形象展示 -->
+            <div class="hero-visual">
+                <div class="hero-avatar-frame">
+                    <div class="hero-avatar-placeholder">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3">
+                            <circle cx="40" cy="28" r="14"/>
+                            <path d="M14 70c0-14.4 11.6-26 26-26s26 11.6 26 26"/>
+                        </svg>
+                        <span>替换为你的头像</span>
+                    </div>
+                </div>
+                <div class="hero-accent"></div>
+            </div>
+        </div>
+        <!-- 滚动提示 -->
+        <div class="scroll-hint">
+            <span>向下探索</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- ========== 2. 作品展示模块 ========== -->
+    <section class="works" id="works">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">作品集</span>
+                <h2 class="section-title">精选作品</h2>
+                <p class="section-desc">
+                    每一部作品，都是一次用心的表达。涵盖自媒体内容、企业宣传、AI创意短片等多个领域。
+                </p>
+            </div>
+
+            <!-- 分类筛选 -->
+            <div class="works-filter">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="media">自媒体作品</button>
+                <button class="filter-btn" data-filter="corporate">企业宣传</button>
+                <button class="filter-btn" data-filter="ai">AI 短剧</button>
+            </div>
+
+            <!-- 作品网格 - 由 JavaScript 动态渲染 -->
+            <div class="works-grid" id="worksGrid">
+                <div class="works-loading" id="worksLoading">
+                    <p>加载作品中...</p>
+                </div>
+            </div>
+
+            <!-- 加载更多 -->
+            <div class="works-more">
+                <button class="btn btn-outline" id="loadMore">加载更多作品</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== 3. 关于我 / 服务能力模块 ========== -->
+    <section class="about" id="about">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">关于我</span>
+                <h2 class="section-title">创作理念与服务</h2>
+                <p class="section-desc">
+                    不只是拍视频，更是为品牌构建有温度的内容体系。
+                </p>
+            </div>
+
+            <div class="about-grid">
+                <!-- 理念卡片 -->
+                <div class="about-card">
+                    <div class="about-card-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="16" cy="16" r="12"/>
+                            <path d="M16 10v8l5 3"/>
+                        </svg>
+                    </div>
+                    <h3>高效执行</h3>
+                    <p>从策划到成片，全流程把控。确保每个项目按时、高品质交付。</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-card-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M4 8h24v16H4z"/>
+                            <circle cx="16" cy="16" r="4"/>
+                            <path d="M16 12v8M12 16h8"/>
+                        </svg>
+                    </div>
+                    <h3>创意驱动</h3>
+                    <p>每一部作品都始于一个独特的创意概念，拒绝模板化生产。</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-card-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M8 6h16v20H8z"/>
+                            <path d="M12 12l4 4-4 4M18 18h4"/>
+                        </svg>
+                    </div>
+                    <h3>AI 赋能</h3>
+                    <p>熟练运用AI工具辅助创意、提升效率，探索内容创作的新可能。</p>
+                </div>
+
+                <div class="about-card">
+                    <div class="about-card-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M16 4C9.4 4 4 9.4 4 16s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4z"/>
+                            <path d="M16 10v8M10 14h12"/>
+                        </svg>
+                    </div>
+                    <h3>深度合作</h3>
+                    <p>不只是服务商，更是品牌的创作合伙人。长期陪伴，共同成长。</p>
+                </div>
+            </div>
+
+            <!-- 服务项目 -->
+            <div class="services">
+                <h3 class="services-title">我能为你做什么</h3>
+                <div class="services-list">
+                    <div class="service-item">
+                        <span class="service-num">01</span>
+                        <div class="service-content">
+                            <h4>自媒体内容制作</h4>
+                            <p>个人IP孵化、内容策划、拍摄剪辑、账号运营指导</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-num">02</span>
+                        <div class="service-content">
+                            <h4>企业宣传片 / 品牌短片</h4>
+                            <p>企业形象片、产品宣传片、品牌故事短片、活动记录</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-num">03</span>
+                        <div class="service-content">
+                            <h4>AI 创意短剧</h4>
+                            <p>AI辅助剧本创作、AI视频生成、实验性短片制作</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-num">04</span>
+                        <div class="service-content">
+                            <h4>内容策略咨询</h4>
+                            <p>品牌内容定位、视频矩阵规划、内容营销策略</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== 4. 联系与合作模块 ========== -->
+    <section class="contact" id="contact">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">联系合作</span>
+                <h2 class="section-title">开始一个项目</h2>
+                <p class="section-desc">
+                    如果你有好的想法或项目，欢迎随时联系。期待与你一起创造打动人心的作品。
+                </p>
+            </div>
+
+            <div class="contact-grid">
+                <!-- 联系信息 -->
+                <div class="contact-info">
+                    <h3>联系方式</h3>
+                    <div class="contact-list">
+                        <div class="contact-item">
+                            <div class="contact-item-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <path d="M2 6l10 7 10-7"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="contact-item-label">邮箱</span>
+                                <a href="mailto:hello@creator.com">hello@creator.com</a>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-item-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M8 10.9c3.4-2.3 7.8-1.9 10.6 1 .8.8 1.3 1.8 1.6 2.9"/>
+                                    <circle cx="9" cy="9" r="7"/><circle cx="15" cy="15" r="7"/>
+                                    <path d="M12 6v.01M6 12v.01M12 18v.01"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="contact-item-label">微信</span>
+                                <span>creator_zhang</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-item-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="5" y="2" width="14" height="20" rx="2"/>
+                                    <path d="M12 18h.01"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="contact-item-label">手机</span>
+                                <span>+86 138-0000-0000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 社交媒体 -->
+                    <div class="social-links">
+                        <h4>社交平台</h4>
+                        <div class="social-grid">
+                            <a href="#" class="social-link" title="B站">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.8 4.5c1.5 0 2.7 1.2 2.7 2.7v9.6c0 1.5-1.2 2.7-2.7 2.7H6.2c-1.5 0-2.7-1.2-2.7-2.7V7.2c0-1.5 1.2-2.7 2.7-2.7h11.6zM10 8.5v7l6-3.5-6-3.5z"/></svg>
+                                B站
+                            </a>
+                            <a href="#" class="social-link" title="抖音">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.6 6.1c-1.3 0-2.4-1-2.6-2.3h-3.3v11.7c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9 1.3-2.9 2.9-2.9c.3 0 .6 0 .9.1v-3.4c-.3 0-.6-.1-.9-.1-3.5 0-6.3 2.8-6.3 6.3s2.8 6.3 6.3 6.3 6.3-2.8 6.3-6.3V8.6c1.2.8 2.6 1.3 4.1 1.3V6.7c-.6 0-1.1-.2-1.6-.6z"/></svg>
+                                抖音
+                            </a>
+                            <a href="#" class="social-link" title="小红书">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8l2 4-2 4-2-4z" fill="white"/></svg>
+                                小红书
+                            </a>
+                            <a href="#" class="social-link" title="视频号">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg>
+                                视频号
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 联系表单 -->
+                <div class="contact-form-wrapper">
+                    <h3>发送消息</h3>
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">姓名</label>
+                                <input type="text" id="name" placeholder="你的名字" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="company">公司 / 组织</label>
+                                <input type="text" id="company" placeholder="（选填）">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">邮箱</label>
+                            <input type="email" id="email" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="service">感兴趣的服务</label>
+                            <select id="service">
+                                <option value="">请选择（选填）</option>
+                                <option value="media">自媒体内容制作</option>
+                                <option value="corporate">企业宣传片</option>
+                                <option value="ai">AI 短剧创作</option>
+                                <option value="consulting">内容策略咨询</option>
+                                <option value="other">其他合作</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">项目描述</label>
+                            <textarea id="message" rows="4" placeholder="简单描述你的项目想法或需求..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            发送消息
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 3l5 5-5 5M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </form>
+                    <div class="form-success" id="formSuccess">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="24" cy="24" r="20"/>
+                            <path d="M16 24l6 6 10-10"/>
+                        </svg>
+                        <h4>消息已发送</h4>
+                        <p>感谢你的联系，我会尽快回复。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== 页脚 ========== -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="#home" class="footer-logo">CR<span>.</span></a>
+                <p>用镜头讲述品牌故事，以创意驱动内容价值。</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>导航</h4>
+                    <a href="#home">首页</a>
+                    <a href="#works">作品</a>
+                    <a href="#about">关于</a>
+                    <a href="#contact">联系</a>
+                </div>
+                <div class="footer-col">
+                    <h4>服务</h4>
+                    <a href="#about">自媒体制作</a>
+                    <a href="#about">企业宣传片</a>
+                    <a href="#about">AI 短剧</a>
+                    <a href="#about">内容咨询</a>
+                </div>
+                <div class="footer-col">
+                    <h4>联系</h4>
+                    <a href="mailto:hello@creator.com">hello@creator.com</a>
+                    <span>微信: creator_zhang</span>
+                    <span>+86 138-0000-0000</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Creator. All rights reserved. 保留所有权利。</p>
+        </div>
+    </footer>
+
+    <!-- 视频播放模态窗口 -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-modal-backdrop"></div>
+        <div class="video-modal-content">
+            <button class="video-modal-close" id="videoModalClose" aria-label="关闭">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <div class="video-modal-wrapper" id="videoModalWrapper">
+                <!-- 视频播放器将动态插入此处 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 作品数据（静态部署时使用，本地开发时 API 优先） -->
+    <script src="works-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

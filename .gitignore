@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+server.log
+
+# Node
+node_modules/
+package.json
+package-lock.json
+
+# 数据（本地管理数据不提交到公开仓库）
+data/works.json
+
+# 用户上传的媒体文件（太大，建议用外链）
+assets/covers/*
+assets/videos/*
+!assets/covers/.gitkeep
+!assets/videos/.gitkeep
+
+# 系统文件
+.DS_Store
+Thumbs.db
