@@ -412,6 +412,53 @@
         );
     });
 
+    // ========== 同步到 GitHub ==========
+    const btnSync = $('#btnSync');
+    const syncStatus = $('#syncStatus');
+
+    if (btnSync) {
+        btnSync.addEventListener('click', async () => {
+            btnSync.disabled = true;
+            btnSync.textContent = '⏳ 同步中...';
+            syncStatus.textContent = '';
+            syncStatus.className = '';
+
+            try {
+                const res = await fetch('/api/sync', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Password': authToken
+                    }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    btnSync.textContent = '✅ 已同步';
+                    syncStatus.textContent = data.message || '同步成功';
+                    syncStatus.style.color = '#4a8';
+                    showToast('已同步到 GitHub Pages', 'success');
+                } else {
+                    btnSync.textContent = '🚀 同步到 GitHub Pages';
+                    syncStatus.textContent = '❌ ' + (data.error || '同步失败');
+                    syncStatus.style.color = '#c44';
+                    showToast(data.error || '同步失败', 'error');
+                }
+            } catch (err) {
+                btnSync.textContent = '🚀 同步到 GitHub Pages';
+                syncStatus.textContent = '❌ 网络错误，请重试';
+                syncStatus.style.color = '#c44';
+                showToast('网络错误', 'error');
+            }
+
+            btnSync.disabled = false;
+            setTimeout(() => {
+                if (btnSync.textContent === '✅ 已同步') {
+                    btnSync.textContent = '🚀 同步到 GitHub Pages';
+                }
+            }, 5000);
+        });
+    }
+
     // ========== 确认弹窗 ==========
     function showConfirm(title, message, onConfirm) {
         const overlay = document.createElement('div');

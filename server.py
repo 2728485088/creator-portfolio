@@ -5,6 +5,7 @@ Flask + JSON 文件存储 + 文件上传
 import json
 import os
 import uuid
+import subprocess
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
@@ -194,6 +195,49 @@ def api_upload():
         'filename': safe_name,
         'size': file_path.stat().st_size
     })
+
+
+# ==================== API: 同步到 GitHub ====================
+
+GITHUB_REMOTE = os.environ.get('GITHUB_REMOTE', '')
+
+
+@app.route('/api/sync', methods=['POST'])
+@auth_required
+def api_sync_to_github():
+    """将当前数据同步到 GitHub Pages"""
+    # 1. 先生成最新的 deploy.html 和 works-data.js
+    try:
+        result = subprocess.run(
+            ['python3.11', 'build_deploy.py'],
+            cwd=str(BASE_DIR),
+            capture_output=True, text=True, timeout=30
+        )
+        if result.returncode != 0:
+            return jsonify({'error': f'构建失败: {result.stderr}'}), 500
+    except Exception as e:
+        return jsonify({'error': f'构建异常: {str(e)}'}), 500
+
+    # 2. Git add + commit + push
+    try:
+        git_cmds = [
+            ['git', 'add', '-A'],
+            ['git', 'commit', '-m', '🔄 管理后台更新作品数据'],
+            ['git', 'push', 'origin', 'main'],
+        ]
+        for cmd in git_cmds:
+            r = subprocess.run(cmd, cwd=str(BASE_DIR), capture_output=True, text=True, timeout=30)
+            # commit 可能返回 "nothing to commit" 不是错误
+            if r.returncode != 0 and 'nothing to commit' not in r.stdout + r.stderr:
+                return jsonify({'error': f'Git 失败 ({cmd[0]}): {r.stderr}'}), 500
+
+        return jsonify({
+            'success': True,
+            'message': '已同步到 GitHub，Pages 将在 1-2 分钟内自动更新',
+            'pagesUrl': 'https://2728485088.github.io/creator-portfolio/'
+        })
+    except Exception as e:
+        return jsonify({'error': f'推送异常: {str(e)}'}), 500
 
 
 # ==================== API: 认证 ====================

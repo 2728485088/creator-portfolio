@@ -150,6 +150,18 @@
                         <button class="btn btn-outline btn-danger" id="btnDelete">🗑 删除</button>
                     </div>
 
+                    <!-- 同步到线上 -->
+                    <div class="form-section" style="border-top:1px solid var(--color-border-light);padding-top:20px;margin-top:8px;">
+                        <label class="form-label">🌐 发布到公网</label>
+                        <button class="btn btn-outline btn-full" id="btnSync" style="background:var(--color-accent);color:#fff;border-color:var(--color-accent);">
+                            🚀 同步到 GitHub Pages
+                        </button>
+                        <span class="form-hint" style="margin-top:8px;">
+                            保存后点此按钮，自动推送到 <code>2728485088.github.io/creator-portfolio</code>，1-2分钟后生效。
+                        </span>
+                        <div id="syncStatus" style="margin-top:8px;font-size:13px;"></div>
+                    </div>
+
                     <!-- 状态消息 -->
                     <div class="form-status" id="formStatus"></div>
                 </div>
