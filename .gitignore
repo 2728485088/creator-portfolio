@@ -12,10 +12,8 @@ package-lock.json
 data/works.json
 
 # 用户上传的媒体文件（太大，建议用外链）
-assets/covers/*
+# 封面图片会上传到 GitHub
 assets/videos/*
-!assets/covers/.gitkeep
-!assets/videos/.gitkeep
 
 # 系统文件
 .DS_Store
