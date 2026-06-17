@@ -71,26 +71,35 @@ body {
     overflow-x: hidden;
 }
 
-/* 全站淡雅背景纹理 */
+/* 全站低饱和自然风光背景 */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background-image: 
-        /* 远山层 */
-        linear-gradient(175deg, 
-            rgba(180,195,210,0.12) 0%, 
-            rgba(210,220,215,0.10) 30%,
-            rgba(235,230,220,0.06) 60%, 
-            transparent 100%
-        ),
-        /* 光晕 */
-        radial-gradient(ellipse at 85% 15%, rgba(180,195,220,0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 15% 85%, rgba(200,210,195,0.10) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(245,240,230,0.06) 0%, transparent 70%);
-    background-size: 100% 100%;
+    /* 森林草原自然风光 - Unsplash 高质量图片 */
+    background-image: url('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1920&q=80&fm=webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* 低饱和度 + 高亮度叠加层，保持文字可读 */
+    filter: saturate(0.4) brightness(1.15);
+    opacity: 0.35;
+}
+
+/* 额外的柔和渐变叠加，让背景更有层次 */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(180deg, 
+        rgba(255,255,255,0.7) 0%, 
+        rgba(250,249,245,0.5) 40%,
+        rgba(240,238,232,0.6) 100%
+    );
 }
 
 a {
