@@ -13,9 +13,9 @@
 
 /* ---------- CSS 变量 ---------- */
 :root {
-    --color-bg: #fafaf9;
-    --color-bg-alt: #f5f4f1;
-    --color-surface: #ffffff;
+    --color-bg: transparent;
+    --color-bg-alt: rgba(255,255,255,0.12);
+    --color-surface: rgba(255,255,255,0.55);
     --color-text: #1a1a1a;
     --color-text-secondary: #6b6b6b;
     --color-text-muted: #9e9e9e;
@@ -62,7 +62,7 @@ html {
 }
 
 html {
-    background: #f0ede5;
+    background: #0a2a3a;
 }
 
 body {
@@ -72,8 +72,8 @@ body {
     line-height: 1.7;
     color: var(--color-text);
     background: 
-        linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(248,246,240,0.65) 40%, rgba(235,232,224,0.7) 100%),
-        url('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1920&q=80&fm=webp') center/cover no-repeat fixed;
+        linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(235,242,248,0.45) 30%, rgba(220,235,245,0.5) 60%, rgba(200,220,240,0.55) 100%),
+        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80&fm=webp') center/cover no-repeat fixed;
     overflow-x: hidden;
 }
 
@@ -102,7 +102,7 @@ ul {
     right: 0;
     z-index: 1000;
     height: var(--nav-height);
-    background: rgba(250, 250, 249, 0.85);
+    background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid transparent;
@@ -110,8 +110,8 @@ ul {
 }
 
 .nav.scrolled {
-    border-bottom-color: var(--color-border);
-    background: rgba(250, 250, 249, 0.95);
+    border-bottom-color: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.85);
     box-shadow: var(--shadow-sm);
 }
 
@@ -488,7 +488,7 @@ ul {
 
 /* ---------- 作品展示 ---------- */
 .works {
-    background: var(--color-bg-alt);
+    background: rgba(255,255,255,0.2);
 }
 
 .works-filter {
@@ -658,7 +658,7 @@ ul {
 
 /* ---------- 关于我 ---------- */
 .about {
-    background: var(--color-surface);
+    background: rgba(255,255,255,0.35);
 }
 
 .about-grid {
@@ -766,7 +766,7 @@ ul {
 
 /* ---------- 联系模块 ---------- */
 .contact {
-    background: var(--color-bg-alt);
+    background: rgba(255,255,255,0.25);
 }
 
 .contact-grid {
