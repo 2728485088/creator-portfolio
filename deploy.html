@@ -71,6 +71,28 @@ body {
     overflow-x: hidden;
 }
 
+/* 全站淡雅背景纹理 */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: 
+        /* 远山层 */
+        linear-gradient(175deg, 
+            rgba(180,195,210,0.12) 0%, 
+            rgba(210,220,215,0.10) 30%,
+            rgba(235,230,220,0.06) 60%, 
+            transparent 100%
+        ),
+        /* 光晕 */
+        radial-gradient(ellipse at 85% 15%, rgba(180,195,220,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 15% 85%, rgba(200,210,195,0.10) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(245,240,230,0.06) 0%, transparent 70%);
+    background-size: 100% 100%;
+}
+
 a {
     text-decoration: none;
     color: inherit;
