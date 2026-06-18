@@ -52,21 +52,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ========== 从 API 加载作品数据（API 不可用时 fallback 到静态数据） ==========
+    // ========== 从 API 加载作品数据 ==========
     const worksGrid = document.getElementById('worksGrid');
     const worksLoading = document.getElementById('worksLoading');
     let allWorks = [];
     let currentFilter = 'all';
 
     async function loadWorks() {
+        // 先在客户端就绪时使用静态数据渲染（零等待）
+        if (window.__WORKS_DATA__ && window.__WORKS_DATA__.length > 0) {
+            allWorks = window.__WORKS_DATA__;
+            renderWorks(currentFilter);
+        }
+
+        // 后台尝试从 API 获取最新数据（仅本地开发环境有效）
         try {
             const res = await fetch('/api/works');
             if (res.ok) {
-                allWorks = await res.json();
-            } else {
-                throw new Error('API error');
+                const apiData = await res.json();
+                allWorks = apiData;
+                renderWorks(currentFilter);
             }
         } catch (err) {
+            // API 不可用，静态数据已经渲染过了
+        }
+    }
             // API 不可用 → fallback 到 works-data.js 提供的静态数据
             if (window.__WORKS_DATA__ && window.__WORKS_DATA__.length > 0) {
                 allWorks = window.__WORKS_DATA__;
