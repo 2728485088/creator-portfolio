@@ -179,12 +179,34 @@ def api_upload():
             return jsonify({'error': f'不支持的视频格式: {ext}，支持: {", ".join(ALLOWED_VIDEO_EXT)}'}), 400
         target_dir = VIDEOS_DIR
 
-    # 生成唯一文件名
-    safe_name = f"{file_type}-{uuid.uuid4().hex[:8]}{ext}"
+    # 生成唯一文件名（封面图用 .jpg 统一格式）
+    if file_type == 'cover':
+        safe_name = f"{file_type}-{uuid.uuid4().hex[:8]}.jpg"
+    else:
+        safe_name = f"{file_type}-{uuid.uuid4().hex[:8]}{ext}"
     file_path = target_dir / safe_name
 
-    # 保存文件
-    file.save(str(file_path))
+    if file_type == 'cover':
+        # 使用 Pillow 压缩封面图：最大 1200px 宽，JPEG 质量 80%
+        try:
+            from PIL import Image
+            img = Image.open(file)
+            # 转为 RGB（处理 PNG 透明背景）
+            if img.mode in ('RGBA', 'P'):
+                img = img.convert('RGB')
+            # 限制最大宽度 1200px
+            if img.width > 1200:
+                ratio = 1200 / img.width
+                new_size = (1200, int(img.height * ratio))
+                img = img.resize(new_size, Image.LANCZOS)
+            # 压缩保存
+            img.save(str(file_path), 'JPEG', quality=80, optimize=True)
+        except Exception as e:
+            # 如果 Pillow 失败，回退到原始保存
+            file.save(str(file_path))
+    else:
+        # 视频文件直接保存
+        file.save(str(file_path))
 
     # 返回相对路径
     rel_path = f"assets/{file_type}s/{safe_name}"

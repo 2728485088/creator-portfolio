@@ -606,14 +606,6 @@ ul {
     border-color: var(--color-border);
 }
 
-.work-card-media {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    background: rgba(255,255,255,0.05);
-    overflow: hidden;
-    cursor: pointer;
-}
-
 .work-card-placeholder {
     width: 100%;
     height: 100%;
@@ -1261,6 +1253,33 @@ ul {
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+/* 封面图片加载时的 shimmer 骨架屏 */
+.work-card-media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0.04) 0%,
+        rgba(255,255,255,0.12) 50%,
+        rgba(255,255,255,0.04) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* 图片加载完后覆盖 shimmer */
+.work-card-cover {
+    position: relative;
+    z-index: 1;
 }
 
 /* 无封面图时，占位符自动可见 */
