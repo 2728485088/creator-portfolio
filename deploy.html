@@ -1890,15 +1890,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // API 不可用，静态数据已经渲染过了
         }
     }
-            // API 不可用 → fallback 到 works-data.js 提供的静态数据
-            if (window.__WORKS_DATA__ && window.__WORKS_DATA__.length > 0) {
-                allWorks = window.__WORKS_DATA__;
-            } else {
-                allWorks = [];
-            }
-        }
-        renderWorks(currentFilter);
-    }
 
     function renderWorks(filter) {
         if (!worksGrid) return;
