@@ -110,9 +110,16 @@ def api_create_work():
         'description': data.get('description', ''),
         'tags': data.get('tags', []),
         'cover': data.get('cover', ''),
-        'video': data.get('video', ''),
         'createdAt': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     }
+
+    # 支持 videos 数组和旧的 video 字段
+    if 'videos' in data:
+        work['videos'] = data['videos']
+    elif 'video' in data and data['video']:
+        work['videos'] = [data['video']]
+    else:
+        work['videos'] = []
 
     works = load_works()
     works.append(work)
@@ -132,9 +139,15 @@ def api_update_work(work_id):
     for w in works:
         if w['id'] == work_id:
             # 只更新提供的字段
-            for field in ['category', 'title', 'description', 'tags', 'cover', 'video']:
+            for field in ['category', 'title', 'description', 'tags', 'cover']:
                 if field in data:
                     w[field] = data[field]
+            # videos 数组
+            if 'videos' in data:
+                w['videos'] = data['videos']
+            elif 'video' in data:
+                # 旧的 video 字段向下兼容
+                w['videos'] = [data['video']] if data['video'] else []
             save_works(works)
             return jsonify(w)
     return jsonify({'error': '作品不存在'}), 404

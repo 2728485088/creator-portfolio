@@ -119,18 +119,21 @@
                         </div>
                     </div>
 
-                    <!-- 视频 -->
+                    <!-- 视频（支持最多6个） -->
                     <div class="form-section">
-                        <label class="form-label">🎬 视频</label>
+                        <label class="form-label">🎬 视频（最多6个）</label>
                         <div class="video-source-tabs">
                             <button class="video-tab active" data-tab="link">🔗 粘贴外链（推荐）</button>
                             <button class="video-tab" data-tab="upload">📁 上传本地视频</button>
                         </div>
                         <div class="video-panel" id="videoPanelLink">
-                            <input type="text" class="form-input" id="editVideo" placeholder="粘贴 B站链接 / YouTube链接 / 其他视频URL...">
-                            <span class="form-hint">
-                                ✅ <strong>推荐使用外链</strong>：视频上传到 B站/YouTube 后粘贴链接即可，不占空间、加载更快、任何平台都能播放。<br>
-                                支持：<code>bilibili.com/video/BVxxxxx</code>、<code>youtube.com/watch?v=xxxxx</code>、<code>youtu.be/xxxxx</code>
+                            <div class="videos-list" id="videosList">
+                                <!-- 视频输入项由 JS 渲染 -->
+                            </div>
+                            <button class="btn btn-outline btn-sm" id="btnAddVideo">+ 添加一个视频</button>
+                            <span class="form-hint" style="margin-top:8px;display:block;">
+                                ✅ <strong>推荐使用外链</strong>：上传到 B站/YouTube 后粘贴链接，加载更快、不占空间。<br>
+                                支持：<code>bilibili.com/video/BVxxxxx</code>、<code>youtube.com/watch?v=xxxxx</code>
                             </span>
                         </div>
                         <div class="video-panel" id="videoPanelUpload" style="display:none">
@@ -139,7 +142,7 @@
                                 <input type="file" id="videoFileInput" accept="video/*" hidden>
                                 <span class="video-upload-hint" id="videoUploadHint">未选择文件</span>
                             </div>
-                            <span class="form-hint">上传后路径自动填入上方输入框。本地视频仅本地服务器可访问，部署到线上后需改用外链。</span>
+                            <span class="form-hint">上传后将添加到当前作品视频列表中。</span>
                         </div>
                     </div>
 

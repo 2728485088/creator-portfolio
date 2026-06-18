@@ -94,12 +94,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         worksGrid.innerHTML = filtered.map(w => {
             const tagsHtml = (w.tags || []).map(t => `<span>${escapeHtml(t)}</span>`).join('');
-            const hasVideo = w.video && w.video.trim() !== '';
+            const videos = w.videos && w.videos.length > 0 ? w.videos : (w.video ? [w.video] : []);
+            const hasVideo = videos.length > 0;
+            const vCount = videos.length;
 
             return `
                 <div class="work-card reveal" data-category="${w.category || ''}"
                      data-cover="${escapeHtml(w.cover || '')}"
-                     data-video="${escapeHtml(w.video || '')}">
+                     data-videos='${escapeHtml(JSON.stringify(videos))}'>
                     <div class="work-card-media">
                         <img class="work-card-cover" src="${escapeHtml(w.cover || '')}" alt="${escapeHtml(w.title)}" loading="lazy"
                              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
@@ -112,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         ${hasVideo ? `
                         <div class="work-card-overlay">
-                            <span class="work-card-play">▶ 播放视频</span>
+                            <span class="work-card-play">▶ ${vCount > 1 ? '播放列表 (' + vCount + '集)' : '播放视频'}</span>
                         </div>` : ''}
                     </div>
                     <div class="work-card-info">
@@ -138,82 +140,158 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初始加载
     loadWorks();
 
-    // ========== 视频播放模态窗口 ==========
+    // ========== 视频播放模态窗口（支持多视频列表） ==========
     const videoModal = document.getElementById('videoModal');
     const videoModalWrapper = document.getElementById('videoModalWrapper');
     const videoModalClose = document.getElementById('videoModalClose');
+    let videoList = [];
+    let currentVideoIndex = 0;
 
-    // 打开视频
-    function openVideo(videoSrc) {
+    function openVideo(videos) {
         if (!videoModal || !videoModalWrapper) return;
+        if (!videos || videos.length === 0) return;
 
-        // 清除旧内容
-        videoModalWrapper.innerHTML = '';
-
-        // 判断是外链（YouTube / B站 / 其他URL）还是本地视频
-        const isYouTube = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/.test(videoSrc);
-        const isBilibili = /bilibili\.com\/video\/(BV[a-zA-Z0-9]+)/.test(videoSrc);
-        const isURL = /^https?:\/\//.test(videoSrc);
-
-        if (isYouTube) {
-            // YouTube 嵌入
-            let videoId = '';
-            const ytMatch = videoSrc.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
-            if (ytMatch) videoId = ytMatch[1];
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
-            iframe.allow = 'autoplay; fullscreen; picture-in-picture';
-            iframe.allowFullscreen = true;
-            videoModalWrapper.appendChild(iframe);
-        } else if (isBilibili) {
-            // B站嵌入
-            const bvMatch = videoSrc.match(/BV[a-zA-Z0-9]+/);
-            const bvid = bvMatch ? bvMatch[0] : '';
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://player.bilibili.com/player.html?bvid=${bvid}&autoplay=1&high_quality=1`;
-            iframe.allow = 'autoplay; fullscreen';
-            iframe.allowFullscreen = true;
-            videoModalWrapper.appendChild(iframe);
-        } else if (isURL) {
-            // 其他外链 → 直接用 iframe 嵌入
-            const iframe = document.createElement('iframe');
-            iframe.src = videoSrc;
-            iframe.allow = 'autoplay; fullscreen';
-            iframe.allowFullscreen = true;
-            videoModalWrapper.appendChild(iframe);
-        } else {
-            // 本地视频文件
-            const video = document.createElement('video');
-            video.src = videoSrc;
-            video.controls = true;
-            video.autoplay = true;
-            video.playsInline = true;
-            video.preload = 'metadata';
-            video.style.width = '100%';
-            video.style.height = '100%';
-            video.style.outline = 'none';
-
-            // 错误处理
-            video.addEventListener('error', () => {
-                videoModalWrapper.innerHTML = '<span class="video-modal-loading">视频加载失败，请检查文件路径</span>';
-            });
-
-            videoModalWrapper.appendChild(video);
-        }
-
+        videoList = videos;
+        currentVideoIndex = 0;
+        renderVideoPlayer();
         videoModal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 
-    // 关闭视频
+    function renderVideoPlayer() {
+        if (!videoModalWrapper) return;
+        const src = videoList[currentVideoIndex];
+        if (!src) return;
+
+        videoModalWrapper.innerHTML = '';
+
+        // 创建播放器容器
+        const playerContainer = document.createElement('div');
+        playerContainer.style.cssText = 'width:100%;height:100%;display:flex;flex-direction:column;';
+
+        // 播放器区域
+        const playerArea = document.createElement('div');
+        playerArea.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;background:#000;position:relative;';
+
+        // 判断视频来源并嵌入
+        const isYouTube = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/.test(src);
+        const isBilibili = /bilibili\.com\/video\/(BV[a-zA-Z0-9]+)/.test(src);
+        const isURL = /^https?:\/\//.test(src);
+
+        if (isYouTube) {
+            const videoId = src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/)?.[1] || '';
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+            iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+            iframe.allowFullscreen = true;
+            iframe.style.cssText = 'width:100%;height:100%;border:none;';
+            playerArea.appendChild(iframe);
+        } else if (isBilibili) {
+            const bvid = src.match(/BV[a-zA-Z0-9]+/)?.[0] || '';
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://player.bilibili.com/player.html?bvid=${bvid}&autoplay=1&high_quality=1`;
+            iframe.allow = 'autoplay; fullscreen';
+            iframe.allowFullscreen = true;
+            iframe.style.cssText = 'width:100%;height:100%;border:none;';
+            playerArea.appendChild(iframe);
+        } else if (isURL) {
+            const iframe = document.createElement('iframe');
+            iframe.src = src;
+            iframe.allow = 'autoplay; fullscreen';
+            iframe.allowFullscreen = true;
+            iframe.style.cssText = 'width:100%;height:100%;border:none;';
+            playerArea.appendChild(iframe);
+        } else {
+            const video = document.createElement('video');
+            video.src = src;
+            video.controls = true;
+            video.autoplay = true;
+            video.playsInline = true;
+            video.preload = 'metadata';
+            video.style.cssText = 'width:100%;height:100%;outline:none;';
+            video.addEventListener('error', () => {
+                playerArea.innerHTML = '<span class="video-modal-loading">视频加载失败，请检查文件路径</span>';
+            });
+            playerArea.appendChild(video);
+        }
+
+        playerContainer.appendChild(playerArea);
+
+        // 如果有多个视频，添加底部导航
+        if (videoList.length > 1) {
+            const navBar = document.createElement('div');
+            navBar.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(0,0,0,0.85);flex-shrink:0;';
+
+            // 上一集按钮
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '‹';
+            prevBtn.style.cssText = `padding:6px 14px;border:1px solid rgba(255,255,255,0.25);border-radius:6px;background:transparent;color:#fff;font-size:18px;cursor:pointer;${currentVideoIndex === 0 ? 'opacity:0.3;cursor:default;' : ''}`;
+            prevBtn.disabled = currentVideoIndex === 0;
+            prevBtn.addEventListener('click', () => {
+                if (currentVideoIndex > 0) { currentVideoIndex--; renderVideoPlayer(); }
+            });
+
+            // 下一集按钮
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '›';
+            nextBtn.style.cssText = `padding:6px 14px;border:1px solid rgba(255,255,255,0.25);border-radius:6px;background:transparent;color:#fff;font-size:18px;cursor:pointer;${currentVideoIndex >= videoList.length - 1 ? 'opacity:0.3;cursor:default;' : ''}`;
+            nextBtn.disabled = currentVideoIndex >= videoList.length - 1;
+            nextBtn.addEventListener('click', () => {
+                if (currentVideoIndex < videoList.length - 1) { currentVideoIndex++; renderVideoPlayer(); }
+            });
+
+            // 进度指示
+            const indicator = document.createElement('span');
+            indicator.textContent = `${currentVideoIndex + 1} / ${videoList.length}`;
+            indicator.style.cssText = 'flex:1;text-align:center;font-size:13px;color:rgba(255,255,255,0.6);letter-spacing:1px;font-family:monospace;';
+
+            // 剧集列表按钮
+            const listBtn = document.createElement('button');
+            listBtn.innerHTML = '☰ 列表';
+            listBtn.style.cssText = 'padding:6px 14px;border:1px solid rgba(255,255,255,0.25);border-radius:6px;background:transparent;color:#fff;font-size:12px;cursor:pointer;';
+            listBtn.addEventListener('click', () => {
+                // 展开剧集列表选择器
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10001;display:flex;align-items:center;justify-content:center;';
+                const panel = document.createElement('div');
+                panel.style.cssText = 'background:rgba(20,20,25,0.95);border-radius:12px;padding:20px;max-width:400px;width:90vw;max-height:60vh;overflow-y:auto;';
+                panel.innerHTML = `<div style="font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">共 ${videoList.length} 集</div>
+                    ${videoList.map((v, i) => `<div style="padding:10px 14px;margin:2px 0;border-radius:6px;cursor:pointer;background:${i === currentVideoIndex ? 'rgba(255,255,255,0.15)' : 'transparent'};color:${i === currentVideoIndex ? '#fff' : 'rgba(255,255,255,0.7)'};font-size:13px;" data-i="${i}">第 ${i + 1} 集</div>`).join('')}
+                    <div style="text-align:center;margin-top:12px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);">
+                        <button style="padding:6px 20px;border:1px solid rgba(255,255,255,0.2);border-radius:6px;background:transparent;color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer;">关闭</button>
+                    </div>`;
+                overlay.appendChild(panel);
+                document.body.appendChild(overlay);
+
+                panel.querySelectorAll('[data-i]').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const i = parseInt(el.getAttribute('data-i'));
+                        currentVideoIndex = i;
+                        renderVideoPlayer();
+                        overlay.remove();
+                    });
+                });
+                overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+                panel.querySelector('button')?.addEventListener('click', () => overlay.remove());
+            });
+
+            navBar.appendChild(prevBtn);
+            navBar.appendChild(indicator);
+            navBar.appendChild(listBtn);
+            navBar.appendChild(nextBtn);
+            playerContainer.appendChild(navBar);
+        }
+
+        videoModalWrapper.appendChild(playerContainer);
+    }
+
     function closeVideo() {
         if (!videoModal || !videoModalWrapper) return;
         videoModal.classList.remove('active');
         document.body.style.overflow = '';
-
-        // 延迟清除内容（等过渡动画结束）
         setTimeout(() => {
             videoModalWrapper.innerHTML = '';
+            videoList = [];
         }, 400);
     }
 
@@ -221,14 +299,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
         const card = e.target.closest('.work-card');
         if (!card) return;
-
-        // 检查是否点击在媒体区域（封面或占位符）
         const media = card.querySelector('.work-card-media');
         if (!media || !media.contains(e.target)) return;
 
-        const videoSrc = card.getAttribute('data-video');
-        if (videoSrc) {
-            openVideo(videoSrc);
+        // 读取 data-videos
+        const videosAttr = card.getAttribute('data-videos');
+        if (videosAttr) {
+            try {
+                const videos = JSON.parse(videosAttr);
+                if (videos && videos.length > 0) {
+                    openVideo(videos);
+                }
+            } catch (err) { /* ignore */ }
         }
     });
 

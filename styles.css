@@ -1356,13 +1356,14 @@ ul {
 }
 
 .video-modal-wrapper {
-    aspect-ratio: 16 / 9;
+    width: 100%;
+    max-height: 80vh;
+    min-height: 300px;
     background: #000;
     border-radius: var(--radius-lg);
     overflow: hidden;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
 }
 
 .video-modal-wrapper video,

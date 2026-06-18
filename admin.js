@@ -10,6 +10,9 @@
     let currentWorkId = null;
     let authToken = '';
     let currentTags = [];
+    let currentVideos = [];  // 多个视频URL
+
+    const MAX_VIDEOS = 6;
 
     // ========== DOM 引用 ==========
     const $ = (sel) => document.querySelector(sel);
@@ -28,6 +31,8 @@
     const btnSave = $('#btnSave');
     const btnDelete = $('#btnDelete');
     const btnVideoUpload = $('#btnVideoUpload');
+    const btnAddVideo = $('#btnAddVideo');
+    const videosList = $('#videosList');
     const videoTabs = $$('.video-tab');
     const videoPanelLink = $('#videoPanelLink');
     const videoPanelUpload = $('#videoPanelUpload');
@@ -75,6 +80,14 @@
         try {
             const res = await fetch('/api/works');
             works = await res.json();
+            // 兼容旧数据：将 video 转为 videos
+            works.forEach(w => {
+                if (!w.videos && w.video) {
+                    w.videos = [w.video];
+                } else if (!w.videos) {
+                    w.videos = [];
+                }
+            });
             renderWorkList();
             updateCount();
         } catch (err) {
@@ -107,7 +120,6 @@
             </div>
         `).join('');
 
-        // 绑定点击
         workList.querySelectorAll('.work-list-item').forEach(item => {
             item.addEventListener('click', () => {
                 const id = item.getAttribute('data-id');
@@ -122,18 +134,15 @@
         const work = works.find(w => w.id === id);
         if (!work) return;
 
-        // 更新列表高亮
         workList.querySelectorAll('.work-list-item').forEach(el => {
             el.classList.toggle('active', el.getAttribute('data-id') === id);
         });
 
-        // 填充表单
         $('#editId').value = work.id;
         $('#editTitle').value = work.title;
         $('#editCategory').value = work.category;
         $('#editDesc').value = work.description;
         $('#editCover').value = work.cover || '';
-        $('#editVideo').value = work.video || '';
 
         // 封面预览
         if (work.cover) {
@@ -149,8 +158,9 @@
         currentTags = [...(work.tags || [])];
         renderTags();
 
-        // 视频提示
-        videoUploadHint.textContent = work.video ? '已设置' : '未设置';
+        // 视频列表
+        currentVideos = [...(work.videos || [])];
+        renderVideos();
 
         // 显示编辑表单
         editorEmpty.style.display = 'none';
@@ -158,7 +168,6 @@
         formStatus.textContent = '';
         formStatus.className = 'form-status';
 
-        // 移动端：显示列表
         if (window.innerWidth <= 768) {
             $('.admin-sidebar')?.classList.remove('open');
         }
@@ -184,7 +193,6 @@
         });
     }
 
-    // 标签输入
     if (tagsInput) {
         tagsInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -199,10 +207,58 @@
         });
     }
 
-    // 点击标签区域聚焦输入框
     if ($('.tags-editor')) {
         $('.tags-editor').addEventListener('click', () => {
             tagsInput.focus();
+        });
+    }
+
+    // ========== 渲染多视频列表 ==========
+    function renderVideos() {
+        if (!videosList) return;
+        videosList.innerHTML = currentVideos.map((url, i) => `
+            <div class="video-input-item">
+                <span class="video-index">#${i + 1}</span>
+                <input type="text" class="form-input" value="${escapeHtml(url)}" placeholder="粘贴 B站链接 / YouTube链接 / 视频路径..." data-idx="${i}">
+                <button class="btn-remove-video" data-idx="${i}" title="删除此视频">×</button>
+            </div>
+        `).join('');
+
+        // 绑定输入变化
+        videosList.querySelectorAll('.form-input').forEach(inp => {
+            inp.addEventListener('input', (e) => {
+                const idx = parseInt(e.target.getAttribute('data-idx'));
+                currentVideos[idx] = e.target.value;
+            });
+        });
+
+        // 绑定删除
+        videosList.querySelectorAll('.btn-remove-video').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.target.getAttribute('data-idx'));
+                currentVideos.splice(idx, 1);
+                renderVideos();
+            });
+        });
+
+        // 更新添加按钮状态
+        if (btnAddVideo) {
+            btnAddVideo.disabled = currentVideos.length >= MAX_VIDEOS;
+            btnAddVideo.textContent = currentVideos.length >= MAX_VIDEOS
+                ? `已达上限 ${MAX_VIDEOS} 个`
+                : `+ 添加一个视频（${currentVideos.length}/${MAX_VIDEOS}）`;
+        }
+    }
+
+    // 添加视频输入项
+    if (btnAddVideo) {
+        btnAddVideo.addEventListener('click', () => {
+            if (currentVideos.length >= MAX_VIDEOS) return;
+            currentVideos.push('');
+            renderVideos();
+            // 滚动到新添加的输入框
+            const lastInput = videosList?.querySelector('.video-input-item:last-child .form-input');
+            lastInput?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
     }
 
@@ -214,7 +270,6 @@
             const file = coverFileInput.files[0];
             if (!file) return;
 
-            // 本地预览
             const reader = new FileReader();
             reader.onload = (e) => {
                 coverPreview.src = e.target.result;
@@ -223,7 +278,6 @@
             };
             reader.readAsDataURL(file);
 
-            // 上传
             const formData = new FormData();
             formData.append('file', file);
             formData.append('type', 'cover');
@@ -269,7 +323,11 @@
                 });
                 const data = await res.json();
                 if (res.ok && data.path) {
-                    $('#editVideo').value = data.path;
+                    // 添加到视频列表
+                    if (currentVideos.length < MAX_VIDEOS) {
+                        currentVideos.push(data.path);
+                        renderVideos();
+                    }
                     videoUploadHint.textContent = `✅ ${file.name}`;
                     showToast('视频上传成功', 'success');
                 } else {
@@ -291,11 +349,12 @@
         $('#editCategory').value = 'media';
         $('#editDesc').value = '';
         $('#editCover').value = '';
-        $('#editVideo').value = '';
         coverPreview.style.display = 'none';
         coverPlaceholder.style.display = 'flex';
         currentTags = [];
         renderTags();
+        currentVideos = [];
+        renderVideos();
         videoUploadHint.textContent = '未选择文件';
         editorEmpty.style.display = 'none';
         editorForm.style.display = 'block';
@@ -314,13 +373,16 @@
             return;
         }
 
+        // 过滤空的视频链接
+        const cleanVideos = currentVideos.filter(v => v.trim() !== '');
+
         const data = {
             title,
             category: $('#editCategory').value,
             description: $('#editDesc').value.trim(),
             tags: currentTags,
             cover: $('#editCover').value.trim(),
-            video: $('#editVideo').value.trim()
+            videos: cleanVideos
         };
 
         formStatus.textContent = '保存中...';
@@ -330,7 +392,6 @@
         try {
             let res;
             if (currentWorkId) {
-                // 更新
                 res = await fetch(`/api/works/${currentWorkId}`, {
                     method: 'PUT',
                     headers: {
@@ -340,7 +401,6 @@
                     body: JSON.stringify(data)
                 });
             } else {
-                // 新增
                 res = await fetch('/api/works', {
                     method: 'POST',
                     headers: {
@@ -508,7 +568,6 @@
 
     // ========== 键盘快捷键 ==========
     document.addEventListener('keydown', (e) => {
-        // Cmd/Ctrl + S 保存
         if ((e.metaKey || e.ctrlKey) && e.key === 's') {
             e.preventDefault();
             if (editorForm.style.display !== 'none') {
@@ -536,7 +595,6 @@
     }
 
     // ========== 初始化 ==========
-    // 聚焦密码输入框
     if (authPassword) authPassword.focus();
 
 })();

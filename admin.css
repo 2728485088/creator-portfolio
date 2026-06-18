@@ -437,6 +437,66 @@
     margin-bottom: 4px;
 }
 
+/* 多视频输入列表 */
+.videos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.video-input-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius-sm);
+    padding: 6px 8px;
+}
+
+.video-input-item .video-index {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    min-width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.video-input-item .form-input {
+    flex: 1;
+    margin: 0;
+    font-size: 13px;
+    padding: 8px 12px;
+}
+
+.video-input-item .btn-remove-video {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(200,68,68,0.15);
+    color: #c44;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+
+.video-input-item .btn-remove-video:hover {
+    background: #c44;
+    color: #fff;
+}
+
+#btnAddVideo {
+    font-size: 13px;
+    padding: 6px 16px;
+}
+
 .video-upload-row {
     display: flex;
     align-items: center;
