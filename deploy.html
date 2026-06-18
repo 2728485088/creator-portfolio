@@ -1497,7 +1497,8 @@ ul {
                 <button class="filter-btn active" data-filter="all">全部</button>
                 <button class="filter-btn" data-filter="media">自媒体作品</button>
                 <button class="filter-btn" data-filter="corporate">企业宣传</button>
-                <button class="filter-btn" data-filter="ai">AI 短剧</button>
+                <button class="filter-btn" data-filter="photo">摄像摄影作品</button>
+                <button class="filter-btn" data-filter="ai">AI 作品</button>
             </div>
 
             <!-- 作品网格 - 由 JavaScript 动态渲染 -->
@@ -1875,7 +1876,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderWorks(filter) {
         if (!worksGrid) return;
 
-        const catLabels = { media: '自媒体', corporate: '企业宣传', ai: 'AI 短剧' };
+        const catLabels = { media: '自媒体', corporate: '企业宣传', photo: '摄像摄影', ai: 'AI 作品' };
 
         // 筛选
         const filtered = filter === 'all'

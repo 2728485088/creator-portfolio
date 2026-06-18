@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderWorks(filter) {
         if (!worksGrid) return;
 
-        const catLabels = { media: '自媒体', corporate: '企业宣传', ai: 'AI 短剧' };
+        const catLabels = { media: '自媒体', corporate: '企业宣传', photo: '摄像摄影', ai: 'AI 作品' };
 
         // 筛选
         const filtered = filter === 'all'
