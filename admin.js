@@ -103,7 +103,7 @@
     function renderWorkList() {
         if (!workList) return;
 
-        const catLabels = { media: '自媒体', corporate: '企业宣传', photo: '摄像摄影', ai: 'AI 作品' };
+        const catLabels = { media: '自媒体', corporate: '企业宣传', photo: '摄影', video: '摄像', ai: 'AI 作品' };
 
         workList.innerHTML = works.map(w => `
             <div class="work-list-item ${w.id === currentWorkId ? 'active' : ''}" data-id="${w.id}">

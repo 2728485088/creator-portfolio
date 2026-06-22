@@ -676,6 +676,27 @@ ul {
     padding: 20px 24px;
 }
 
+/* 摄影作品卡片：更聚焦图片，信息区更紧凑 */
+.work-card-photo .work-card-media {
+    aspect-ratio: 4 / 3;
+}
+
+.work-card-photo .work-card-info {
+    padding: 14px 20px;
+}
+
+.work-card-photo .work-card-title {
+    font-size: 15px;
+}
+
+.work-card-photo .work-card-desc {
+    font-size: 13px;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .work-card-category {
     font-size: 11px;
     font-weight: 500;
@@ -1514,7 +1535,8 @@ ul {
                 <button class="filter-btn active" data-filter="all">全部</button>
                 <button class="filter-btn" data-filter="media">自媒体作品</button>
                 <button class="filter-btn" data-filter="corporate">企业宣传</button>
-                <button class="filter-btn" data-filter="photo">摄像摄影作品</button>
+                <button class="filter-btn" data-filter="photo">摄影作品</button>
+                <button class="filter-btn" data-filter="video">摄像作品</button>
                 <button class="filter-btn" data-filter="ai">AI 作品</button>
             </div>
 
@@ -1894,7 +1916,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderWorks(filter) {
         if (!worksGrid) return;
 
-        const catLabels = { media: '自媒体', corporate: '企业宣传', photo: '摄像摄影', ai: 'AI 作品' };
+        const catLabels = { media: '自媒体', corporate: '企业宣传', photo: '摄影', video: '摄像', ai: 'AI 作品' };
 
         // 筛选
         const filtered = filter === 'all'
@@ -1911,7 +1933,37 @@ document.addEventListener('DOMContentLoaded', () => {
             const videos = w.videos && w.videos.length > 0 ? w.videos : (w.video ? [w.video] : []);
             const hasVideo = videos.length > 0;
             const vCount = videos.length;
+            const isPhoto = w.category === 'photo';
 
+            // 摄影作品：纯照片展示，无播放按钮
+            if (isPhoto) {
+                return `
+                    <div class="work-card work-card-photo reveal" data-category="${w.category || ''}"
+                         data-cover="${escapeHtml(w.cover || '')}">
+                        <div class="work-card-media" style="cursor:zoom-in">
+                            <img class="work-card-cover" src="${escapeHtml(w.cover || '')}" alt="${escapeHtml(w.title)}" loading="lazy"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                                 ${w.cover ? '' : 'style="display:none"'}>
+                            <div class="work-card-placeholder" style="display:${w.cover ? 'none' : 'flex'}">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3">
+                                    <rect x="6" y="10" width="36" height="28" rx="3"/>
+                                    <circle cx="18" cy="22" r="4"/>
+                                    <path d="M6 30l10-10 8 8 6-6 10 10"/>
+                                </svg>
+                                <span>暂无照片</span>
+                            </div>
+                        </div>
+                        <div class="work-card-info">
+                            <span class="work-card-category">${catLabels[w.category] || w.category}</span>
+                            <h3 class="work-card-title">${escapeHtml(w.title)}</h3>
+                            <p class="work-card-desc">${escapeHtml(w.description || '')}</p>
+                            <div class="work-card-tags">${tagsHtml}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 其他类型：视频展示
             return `
                 <div class="work-card reveal" data-category="${w.category || ''}"
                      data-cover="${escapeHtml(w.cover || '')}"
@@ -2109,14 +2161,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 400);
     }
 
-    // 点击作品卡片 → 播放视频
+    // 点击作品卡片 → 播放视频 / 摄影作品放大查看
     document.addEventListener('click', (e) => {
         const card = e.target.closest('.work-card');
         if (!card) return;
         const media = card.querySelector('.work-card-media');
         if (!media || !media.contains(e.target)) return;
 
-        // 读取 data-videos
+        // 摄影作品 → 放大查看
+        if (card.classList.contains('work-card-photo')) {
+            const cover = card.getAttribute('data-cover');
+            if (cover) openPhotoViewer(cover, card.querySelector('.work-card-title')?.textContent || '');
+            return;
+        }
+
+        // 其他作品 → 播放视频
         const videosAttr = card.getAttribute('data-videos');
         if (videosAttr) {
             try {
@@ -2127,6 +2186,36 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) { /* ignore */ }
         }
     });
+
+    // ========== 摄影作品放大查看 ==========
+    function openPhotoViewer(src, title) {
+        let viewer = document.getElementById('photoViewer');
+        if (!viewer) {
+            viewer = document.createElement('div');
+            viewer.id = 'photoViewer';
+            viewer.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;cursor:zoom-out;';
+            viewer.innerHTML = `
+                <img style="max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.5);" />
+                <div style="position:absolute;bottom:24px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.7);font-size:14px;letter-spacing:1px;"></div>
+                <button style="position:absolute;top:16px;right:20px;background:none;border:none;color:rgba(255,255,255,0.6);font-size:28px;cursor:pointer;">&times;</button>
+            `;
+            document.body.appendChild(viewer);
+            viewer.addEventListener('click', (e) => {
+                if (e.target === viewer || e.target.tagName === 'BUTTON') {
+                    viewer.style.opacity = '0';
+                    document.body.style.overflow = '';
+                    setTimeout(() => viewer.style.display = 'none', 300);
+                }
+            });
+        }
+        const img = viewer.querySelector('img');
+        const label = viewer.querySelector('div');
+        img.src = src;
+        label.textContent = title;
+        viewer.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => viewer.style.opacity = '1');
+    }
 
     // 关闭按钮
     if (videoModalClose) {

@@ -668,6 +668,27 @@ ul {
     padding: 20px 24px;
 }
 
+/* 摄影作品卡片：更聚焦图片，信息区更紧凑 */
+.work-card-photo .work-card-media {
+    aspect-ratio: 4 / 3;
+}
+
+.work-card-photo .work-card-info {
+    padding: 14px 20px;
+}
+
+.work-card-photo .work-card-title {
+    font-size: 15px;
+}
+
+.work-card-photo .work-card-desc {
+    font-size: 13px;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .work-card-category {
     font-size: 11px;
     font-weight: 500;
