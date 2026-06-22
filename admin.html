@@ -155,13 +155,29 @@
                         <button class="btn btn-outline btn-danger" id="btnDelete">🗑 删除</button>
                     </div>
 
-                    <!-- 同步到线上 -->
+                    <!-- 发布区：服务端模式 / 静态模式 -->
                     <div class="form-section" style="border-top:1px solid var(--color-border-light);padding-top:20px;margin-top:8px;">
-                        <label class="form-label">🌐 发布到公网</label>
-                        <button class="btn btn-outline btn-full" id="btnSync" style="background:var(--color-accent);color:#fff;border-color:var(--color-accent);">
+                        <label class="form-label" id="publishLabel">🌐 发布到公网</label>
+                        <!-- 服务端模式：同步按钮 -->
+                        <button class="btn btn-outline btn-full" id="btnSync" style="background:#117C0D;color:#fff;border-color:#117C0D;">
                             🚀 同步到 GitHub Pages
                         </button>
-                        <span class="form-hint" style="margin-top:8px;">
+                        <!-- 静态模式（GitHub Pages 上）：下载数据 -->
+                        <div id="staticMode" style="display:none;">
+                            <button class="btn btn-outline btn-full" id="btnDownload" style="background:#117C0D;color:#fff;border-color:#117C0D;">
+                                📥 下载数据文件（.json）
+                            </button>
+                            <span class="form-hint" style="margin-top:8px;display:block;">
+                                保存修改后点击下载 <code>works.json</code>，然后手动上传到 GitHub 仓库替换 <code>data/works.json</code>。
+                            </span>
+                            <button class="btn btn-outline btn-full" id="btnRebuild" style="margin-top:10px;">
+                                🔄 生成部署包（deploy.html）
+                            </button>
+                            <span class="form-hint" style="margin-top:6px;display:block;">
+                                生成自包含的 HTML 文件，可托管到任何平台。
+                            </span>
+                        </div>
+                        <span class="form-hint" id="syncHint" style="margin-top:8px;">
                             保存后点此按钮，自动推送到 <code>2728485088.github.io/creator-portfolio</code>，1-2分钟后生效。
                         </span>
                         <div id="syncStatus" style="margin-top:8px;font-size:13px;"></div>

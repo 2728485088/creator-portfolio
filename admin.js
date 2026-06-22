@@ -75,17 +75,59 @@
         }
     });
 
-    // ========== 数据加载 ==========
+    // ========== 数据加载（服务端/静态双模式） ==========
+    const isStatic = window.location.hostname.includes('github.io') || window.location.hostname.includes('htmlcode.fun');
+    const staticMode = $('#staticMode');
+    const btnSync = $('#btnSync');
+    const btnDownload = $('#btnDownload');
+    const btnRebuild = $('#btnRebuild');
+    const syncHint = $('#syncHint');
+    const publishLabel = $('#publishLabel');
+
+    // 静态模式下调整发布区
+    if (isStatic && staticMode && btnSync) {
+        btnSync.style.display = 'none';
+        syncHint.style.display = 'none';
+        staticMode.style.display = 'block';
+        publishLabel.textContent = '📥 导出数据';
+    }
+
     async function loadWorks() {
-        try {
-            const res = await fetch('/api/works');
-            works = await res.json();
-            // 兼容旧数据：将 video 转为 videos
-            works.forEach(w => {
-                if (!w.videos && w.video) {
-                    w.videos = [w.video];
-                } else if (!w.videos) {
-                    w.videos = [];
+        if (isStatic) {
+            // 静态模式：从 works-data.js 加载
+            works = window.__WORKS_DATA__ ? JSON.parse(JSON.stringify(window.__WORKS_DATA__)) : [];
+            // 尝试从 localStorage 恢复未提交的编辑
+            const saved = localStorage.getItem('admin_works');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.length > 0 && parsed[0].id) {
+                        works = parsed;
+                    }
+                } catch(e) {}
+            }
+        } else {
+            // 服务端模式：从 API 加载
+            try {
+                const res = await fetch('/api/works');
+                works = await res.json();
+            } catch (err) {
+                showToast('加载作品失败', 'error');
+                return;
+            }
+        }
+
+        // 兼容旧数据：将 video 转为 videos
+        works.forEach(w => {
+            if (!w.videos && w.video) {
+                w.videos = [w.video];
+            } else if (!w.videos) {
+                w.videos = [];
+            }
+        });
+        renderWorkList();
+        updateCount();
+    }                    w.videos = [];
                 }
             });
             renderWorkList();
@@ -373,7 +415,6 @@
             return;
         }
 
-        // 过滤空的视频链接
         const cleanVideos = currentVideos.filter(v => v.trim() !== '');
 
         const data = {
@@ -390,49 +431,77 @@
         btnSave.disabled = true;
 
         try {
-            let res;
-            if (currentWorkId) {
-                res = await fetch(`/api/works/${currentWorkId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Admin-Password': authToken
-                    },
-                    body: JSON.stringify(data)
-                });
-            } else {
-                res = await fetch('/api/works', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Admin-Password': authToken
-                    },
-                    body: JSON.stringify(data)
-                });
-            }
-
-            const result = await res.json();
-
-            if (res.ok) {
-                if (!currentWorkId) {
-                    currentWorkId = result.id;
-                    $('#editId').value = result.id;
+            if (isStatic) {
+                // 静态模式：本地保存
+                if (currentWorkId) {
+                    const idx = works.findIndex(w => w.id === currentWorkId);
+                    if (idx !== -1) {
+                        works[idx] = { ...works[idx], ...data };
+                    }
+                } else {
+                    const newWork = {
+                        id: 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                        ...data,
+                        createdAt: new Date().toISOString()
+                    };
+                    works.push(newWork);
+                    currentWorkId = newWork.id;
+                    $('#editId').value = newWork.id;
                 }
-                formStatus.textContent = '✅ 已保存';
+                localStorage.setItem('admin_works', JSON.stringify(works));
+                formStatus.textContent = '✅ 已保存（本地存储）';
                 formStatus.className = 'form-status success';
-                showToast('保存成功', 'success');
+                showToast('保存成功 - 记得下载数据文件', 'success');
                 loadWorks();
-
                 setTimeout(() => {
                     formStatus.textContent = '';
                     formStatus.className = 'form-status';
                 }, 2000);
             } else {
-                formStatus.textContent = result.error || '保存失败';
-                formStatus.className = 'form-status error';
+                // 服务端模式
+                let res;
+                if (currentWorkId) {
+                    res = await fetch(`/api/works/${currentWorkId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Admin-Password': authToken
+                        },
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    res = await fetch('/api/works', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Admin-Password': authToken
+                        },
+                        body: JSON.stringify(data)
+                    });
+                }
+
+                const result = await res.json();
+
+                if (res.ok) {
+                    if (!currentWorkId) {
+                        currentWorkId = result.id;
+                        $('#editId').value = result.id;
+                    }
+                    formStatus.textContent = '✅ 已保存';
+                    formStatus.className = 'form-status success';
+                    showToast('保存成功', 'success');
+                    loadWorks();
+                    setTimeout(() => {
+                        formStatus.textContent = '';
+                        formStatus.className = 'form-status';
+                    }, 2000);
+                } else {
+                    formStatus.textContent = result.error || '保存失败';
+                    formStatus.className = 'form-status error';
+                }
             }
         } catch (err) {
-            formStatus.textContent = '网络错误，请重试';
+            formStatus.textContent = '保存失败: ' + err.message;
             formStatus.className = 'form-status error';
         }
 
@@ -450,6 +519,17 @@
             `确定删除「${work.title}」吗？`,
             '删除后无法恢复。封面和视频文件不会被删除，需手动清理。',
             async () => {
+                if (isStatic) {
+                    // 静态模式：本地删除
+                    works = works.filter(w => w.id !== currentWorkId);
+                    localStorage.setItem('admin_works', JSON.stringify(works));
+                    showToast('已删除（本地）', 'success');
+                    currentWorkId = null;
+                    editorForm.style.display = 'none';
+                    editorEmpty.style.display = 'flex';
+                    loadWorks();
+                    return;
+                }
                 try {
                     const res = await fetch(`/api/works/${currentWorkId}`, {
                         method: 'DELETE',
@@ -472,8 +552,7 @@
         );
     });
 
-    // ========== 同步到 GitHub ==========
-    const btnSync = $('#btnSync');
+    // ========== 同步到 GitHub / 静态模式下载 ==========
     const syncStatus = $('#syncStatus');
 
     if (btnSync) {
@@ -516,6 +595,61 @@
                     btnSync.textContent = '🚀 同步到 GitHub Pages';
                 }
             }, 5000);
+        });
+    }
+
+    // ========== 静态模式：下载数据文件 ==========
+    if (btnDownload) {
+        btnDownload.addEventListener('click', () => {
+            // 从 localStorage 或当前 works 取数据
+            let data = works;
+            const saved = localStorage.getItem('admin_works');
+            if (saved) {
+                try { data = JSON.parse(saved); } catch(e) {}
+            }
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'works.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('数据文件已下载', 'success');
+        });
+    }
+
+    // ========== 静态模式：生成部署包 ==========
+    if (btnRebuild) {
+        btnRebuild.addEventListener('click', () => {
+            // 读取本地数据生成 deploy.html（需后端，静态模式下提示）
+            let data = works;
+            const saved = localStorage.getItem('admin_works');
+            if (saved) {
+                try { data = JSON.parse(saved); } catch(e) {}
+            }
+            // 生成带内联数据的 deploy.html
+            const htmlContent = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>贺鑫泽 | 个人作品集</title>
+<style>
+/* CSS 内联到此处，请复制 deploy.html 中的 <style> 内容 */
+</style>
+</head>
+<body>
+<script>
+window.__WORKS_DATA__ = ${JSON.stringify(data, null, 2)};
+// JS 逻辑拷贝到此处
+<\/script>
+</body>
+</html>`;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'deploy.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('部署包已下载，需手动整合 CSS/JS', 'success');
         });
     }
 
