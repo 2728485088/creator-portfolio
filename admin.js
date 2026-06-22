@@ -146,14 +146,6 @@
         });
         renderWorkList();
         updateCount();
-    }                    w.videos = [];
-                }
-            });
-            renderWorkList();
-            updateCount();
-        } catch (err) {
-            showToast('加载作品失败', 'error');
-        }
     }
 
     function updateCount() {
