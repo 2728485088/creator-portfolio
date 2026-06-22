@@ -4,10 +4,10 @@
 
 /* ---------- 基础 ---------- */
 .admin-body {
-    background: #f5f4f1;
+    background: #0b0f1a;
     min-height: 100vh;
     font-family: var(--font-sans);
-    color: var(--color-text);
+    color: #e8edf2;
 }
 
 /* ---------- 登录遮罩 ---------- */
@@ -15,20 +15,32 @@
     position: fixed;
     inset: 0;
     z-index: 10000;
-    background: var(--color-bg);
+    background: linear-gradient(170deg, #0a0e1a, #0f1525, #0e1320, #0a0f1c);
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.auth-overlay::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 800px 500px at 30% 20%, rgba(78, 120, 200, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse 500px 400px at 70% 80%, rgba(140, 90, 200, 0.08) 0%, transparent 50%);
 }
 
 .auth-box {
     text-align: center;
     width: 360px;
     padding: 48px 40px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.2);
 }
 
 .auth-logo {
@@ -36,6 +48,7 @@
     font-size: 32px;
     font-weight: 600;
     margin-bottom: 16px;
+    color: #fff;
 }
 
 .auth-logo span {
@@ -48,11 +61,12 @@
     font-weight: 600;
     margin-bottom: 8px;
     letter-spacing: 1px;
+    color: #fff;
 }
 
 .auth-box > p {
     font-size: 14px;
-    color: var(--color-text-secondary);
+    color: rgba(255,255,255,0.6);
     margin-bottom: 28px;
 }
 
