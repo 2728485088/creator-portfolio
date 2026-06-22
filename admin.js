@@ -47,11 +47,28 @@
     const formStatus = $('#formStatus');
     const toastContainer = $('#toastContainer');
 
-    // ========== 认证 ==========
+    // ========== 认证（服务端/静态双模式） ==========
+    const ADMIN_PASSWORD = 'creator2024';
+
     authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const password = authPassword.value.trim();
         if (!password) return;
+
+        if (isStatic) {
+            // 静态模式：本地验证
+            if (password === ADMIN_PASSWORD) {
+                authToken = 'static-token';
+                authOverlay.style.display = 'none';
+                adminApp.style.display = 'block';
+                loadWorks();
+            } else {
+                authError.textContent = '密码错误';
+                authPassword.value = '';
+                authPassword.focus();
+            }
+            return;
+        }
 
         try {
             const res = await fetch('/api/auth', {
