@@ -4,7 +4,7 @@
 
 /* ---------- 基础 ---------- */
 .admin-body {
-    background: #0b0f1a;
+    background: #001a5c;
     min-height: 100vh;
     font-family: var(--font-sans);
     color: #e8edf2;
@@ -15,7 +15,7 @@
     position: fixed;
     inset: 0;
     z-index: 10000;
-    background: linear-gradient(170deg, #0a0e1a, #0f1525, #0e1320, #0a0f1c);
+    background: linear-gradient(170deg, #00124a, #002087, #001a6e, #001452);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -27,8 +27,8 @@
     inset: 0;
     pointer-events: none;
     background:
-        radial-gradient(ellipse 800px 500px at 30% 20%, rgba(78, 120, 200, 0.1) 0%, transparent 50%),
-        radial-gradient(ellipse 500px 400px at 70% 80%, rgba(140, 90, 200, 0.08) 0%, transparent 50%);
+        radial-gradient(ellipse 800px 500px at 30% 20%, rgba(0, 47, 167, 0.3) 0%, transparent 50%),
+        radial-gradient(ellipse 500px 400px at 70% 80%, rgba(0, 30, 130, 0.2) 0%, transparent 50%);
 }
 
 .auth-box {
