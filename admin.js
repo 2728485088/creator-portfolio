@@ -14,6 +14,9 @@
 
     const MAX_VIDEOS = 6;
 
+    // ========== 运行模式检测 ==========
+    const isStatic = window.location.hostname.includes('github.io') || window.location.hostname.includes('htmlcode.fun');
+
     // ========== DOM 引用 ==========
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => document.querySelectorAll(sel);
@@ -93,7 +96,6 @@
     });
 
     // ========== 数据加载（服务端/静态双模式） ==========
-    const isStatic = window.location.hostname.includes('github.io') || window.location.hostname.includes('htmlcode.fun');
     const staticMode = $('#staticMode');
     const btnSync = $('#btnSync');
     const btnDownload = $('#btnDownload');
